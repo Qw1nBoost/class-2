@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Search Tree Operations</title>
+</head>
+<body>
+    <h1>Операции над БНП: поиск, добавление, удаление</h1>
+    <div>
+        <textarea id="treeInput" rows="4" cols="50"></textarea><br>
+        <button onclick="parseAndDisplayTree()">Парсинг дерева</button>
+    </div>
+    <div>
+        <h3>Оперции:</h3>
+        <button onclick="showMenu()">Показать меню</button>
+    </div>
+    <script>
+        class TreeNode {
+            constructor(value) {
+                this.value = value;
+                this.left = null;
+                this.right = null;
+            }
+        }
+
+        let root = null;
+
+        // Функция для парсинга строки в дерево
+        function parseTree(str) {
+            let index = 0;
+
+            function buildTree() {
+                if (index >= str.length) return null;
+                let value = '';
+                while (index < str.length && /\d/.test(str[index])) {
+                    value += str[index++];
+                }
+                let node = new TreeNode(Number(value));
+
+                if (index < str.length && str[index] === '(') {
+                    index++; // Skip '('
+                    node.left = buildTree();
+                    index++; // Skip ','
+
+                    node.right = buildTree();
+                    index++; // Skip ')'
+                }
+                return node;
+            }
+
+            return buildTree();
+        }
+
+        // Функция для отображения дерева в линейно-скобочной записи
+        function displayTree(node) {
+            if (!node) return '';
+            let left = node.left ? displayTree(node.left) : '';
+            let right = node.right ? displayTree(node.right) : '';
+            if (left || right) {
+                // Если есть хотя бы одно поддерево, добавляем их в строку
+                return `${node.value}(${left}${left && right ? ',' : ''}${right})`;
+            }
+            return `${node.value}`;
+        }
+
+        // Парсинг дерева и отображение в консоль
+        function parseAndDisplayTree() {
+            let treeInput = document.getElementById('treeInput').value.trim();
+            root = parseTree(treeInput);
+            console.log(`Текущее дерево: ${displayTree(root)}`);
+        }
+
+        // Функция добавления узла в дерево
+        function addNode(value) {
+            function insert(node, value) {
+                if (!node) return new TreeNode(value);
+                if (value < node.value) {
+                    node.left = insert(node.left, value);
+                } else if (value > node.value) {
+                    node.right = insert(node.right, value);
+                }
+                return node;
+            }
+            root = insert(root, value);
+        }
+
+        // Функция поиска узла
+        function findNode(value) {
+            function search(node, value) {
+                if (!node) return null;
+                if (node.value === value) return node;
+                if (value < node.value) return search(node.left, value);
+                return search(node.right, value);
+            }
+            return search(root, value);
+        }
+
+        // Функция удаления узла
+        function deleteNode(value) {
+            function remove(node, value) {
+                if (!node) return null;
+                if (value < node.value) {
+                    node.left = remove(node.left, value);
+                } else if (value > node.value) {
+                    node.right = remove(node.right, value);
+                } else {
+                    // Если узел найден
+                    if (!node.left) return node.right;
+                    if (!node.right) return node.left;
+                    let minNode = findMin(node.right);
+                    node.value = minNode.value;
+                    node.right = remove(node.right, minNode.value);
+                }
+                return node;
+            }
+            root = remove(root, value);
+        }
+
+        // Функция поиска минимального узла
+        function findMin(node) {
+            while (node.left) node = node.left;
+            return node;
+        }
+
+        // Функция отображения меню
+        function showMenu() {
+            let action = prompt("Выберите действие:\n1. Добавить узел\n2. Удалить узел\n3. Найти узел\n4. Вывести дерево\n5. Выход");
+            switch (action) {
+                case '1':
+                    let addValue = prompt("Введите значение, которое хотите добавить:");
+                    addNode(Number(addValue));
+                    console.log("Узел добавлен.");
+                    showMenu();
+                    break;
+                case '2':
+                    let deleteValue = prompt("Введите значение, которое хотите удалить:");
+                    deleteNode(Number(deleteValue));
+                    console.log("Узел удален.");
+                    showMenu();
+                    break;
+                case '3':
+                    let findValue = prompt("Введите значение, которое хотите найти:");
+                    let node = findNode(Number(findValue));
+                    console.log(node ? `Узел найден: ${node.value}` : "Узел не найден.");
+                    showMenu();
+                    break;
+                case '4':
+                    console.log(`Текущее дерево: ${displayTree(root)}`);
+                    showMenu();
+                    break;
+                case '5':
+                    console.log("Выход из программы.");
+                    break;
+                default:
+                    console.log("Неверное действие.");
+                    showMenu();
+                    break;
+            }
+        }
+    </script>
+</body>
+</html>
