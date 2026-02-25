@@ -34,11 +34,8 @@ class ANSI:
 
 
 class FontLoader:
-    """Загрузчик шрифтов из файлов"""
     @staticmethod
     def load_font(filename: str) -> Dict[str, List[str]]:
-        """Загружает шрифт из файла"""
-        """Обработка ошибок"""
         try:
             with open(filename, 'r', encoding='utf-8') as f:
                 return json.load(f)
@@ -58,8 +55,6 @@ class FontLoader:
 
 
 class Printer:
-    """Класс для красивого вывода текста в консоль"""
-
     _current_font: ClassVar[Optional[Dict[str, List[str]]]] = None
     _font_height: ClassVar[int] = 0
 
@@ -88,7 +83,6 @@ class Printer:
 
     @classmethod
     def _is_wide_symbol(cls, symbol: str) -> bool:
-        """Проверяет, является ли символ широким"""
         wide_symbols = {'★', '◘', '♦', '♠', '♥', '◆', '♣', '△', '▽'}
         return symbol in wide_symbols
 
@@ -97,7 +91,7 @@ class Printer:
         """Статический метод для вывода текста"""
         if cls._is_wide_symbol(symbol):
             print(f"Ошибка: символ '{symbol}' недопустим. Используйте только однобайтовые символы.")
-            return  # Выходим из метода
+            return
 
         lines = [''] * cls._font_height
 
@@ -152,7 +146,7 @@ def demonstrate_printer() -> None:
     time.sleep(2)
     print("\n" + "=" * 50 + "\n")
 
-    # Демонстрация 3: Смена шрифта на высоту 7
+
     print("3. Смена шрифта на 7x7:")
     Printer.load_font('font7x7.json')
 
