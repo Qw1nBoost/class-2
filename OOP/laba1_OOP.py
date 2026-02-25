@@ -1,8 +1,8 @@
 import math
 from typing import Self
 TOL = 1e-10
-U_SIGN = 'U'
 EMPTY_PLENTY_SIGN = "∅"
+U_SIGN = 'U'
 
 
 class Angle:
