@@ -5,11 +5,7 @@ from typing import Type
 from abc import ABC, abstractmethod
 from typing import Dict, Any, List, Optional
 
-# =============================
-# 1. БАЗОВЫЙ ИНТЕРФЕЙС КОМАНДЫ
-# =============================
-
-
+# интерфейс команды
 class Command(ABC):
     """Абстрактный базовый класс для всех команд"""
 
@@ -34,13 +30,7 @@ class Command(ABC):
     def from_dict(cls, data: Dict[str, Any]) -> 'Command':
         pass
 
-
-# =============================
-# 2. RECEIVER: TEXT BUFFER
-# =============================
-
 class TextBuffer:
-    """Получатель (receiver) для текстовых операций — хранит состояние текста"""
 
     def __init__(self):
         self._text = ""
@@ -58,13 +48,7 @@ class TextBuffer:
     def clear(self):
         self._text = ""
 
-
-# =============================
-# 3. КОНКРЕТНЫЕ КОМАНДЫ
-# =============================
-
 class KeyCommand(Command):
-    """Команда для печати символа"""
     command_type = "KeyCommand"
 
     def __init__(self, symbol: str, buffer: Optional[TextBuffer] = None):
@@ -93,14 +77,7 @@ class KeyCommand(Command):
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'KeyCommand':
-        # buffer будет установлен позже через set_buffer()
         return cls(data["symbol"])
-
-    # @staticmethod
-    # @register_command("KeyCommand")
-    # def from_dict_and_buffer(data: Dict[str, Any], buffer: Optional[TextBuffer]) -> 'KeyCommand':
-    #     return KeyCommand(data["symbol"], buffer)
-
 
 class VolumeUpCommand(Command):
     """Команда увеличения громкости"""
@@ -151,7 +128,6 @@ class VolumeDownCommand(Command):
 
 
 class MediaPlayerCommand(Command):
-    """Команда запуска медиаплеера (одноразовая: launch → undo = close)"""
     command_type = "MediaPlayerCommand"
 
     def execute(self) -> str:
@@ -170,10 +146,7 @@ class MediaPlayerCommand(Command):
     def from_dict(cls, data: Dict[str, Any]) -> 'MediaPlayerCommand':
         return cls()
 
-
-# =============================
-# 4. КЛАСС КЛАВИАТУРЫ
-# =============================
+# класс клавиатуры
 
 class Keyboard:
     def __init__(self, text_buffer: TextBuffer):
@@ -182,7 +155,6 @@ class Keyboard:
         self._history_ptr = -1
         self._text_buffer = text_buffer
 
-    # публичный метод для безопасного изменения привязки клавиш
     def bind_key(self, key: str, command: Command):
         self._key_binds[key] = command
 
@@ -193,8 +165,7 @@ class Keyboard:
     def execute(self, key: str) -> str:
         if key not in self._key_binds:
             return f"unknown key: {key}"
-
-        # Если мы находимся не в конце истории, обрезаем ее
+        
         if self._history_ptr < len(self._history) - 1:
             self._history = self._history[:self._history_ptr + 1]
 
@@ -240,13 +211,10 @@ class Keyboard:
     def get_current_text(self) -> str:
         return self._text_buffer.get_text()
 
-
-# =============================
-# 5. СЕРИАЛИЗАЦИЯ
-# =============================
+# сериализация
 
 class KeyboardSerializer:
-    """Механизм сериализации/десериализации (независим от формата)"""
+    """Механизм сериализации"""
 
     def __init__(self, filename: str):
         self.filename = filename
@@ -263,11 +231,8 @@ class KeyboardSerializer:
         with open(self.filename, 'r', encoding='utf-8') as f:
             return json.load(f)
 
-# =============================
-# 6. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-# =============================
 
-
+# доп. функции
 # создание нужных файлов
 def ensure_output_dir():
     out_dir = "lab6_output"
@@ -290,10 +255,7 @@ def build_command_type_map() -> Dict[str, Type[Command]]:
             mapping[cls.command_type] = cls
     return mapping
 
-
-# =============================
-# 7. ДЕМОНСТРАЦИЯ
-# =============================
+# демонстрация
 
 def main():
     console_file, journal_file, state_file = ensure_output_dir()
@@ -316,7 +278,7 @@ def main():
 
         try:
             print("=" * 60)
-            print("ЛАБОРАТОРНАЯ РАБОТА 6: ВИРТУАЛЬНАЯ КЛАВИАТУРА")
+            print("ВИРТУАЛЬНАЯ КЛАВИАТУРА")
             print("=" * 60)
 
             text_buffer = TextBuffer()
@@ -404,7 +366,7 @@ def main():
             sys.stdout = original
 
     print("\n" + "=" * 60)
-    print("ГОТОВО! Проверьте папку lab6_output/")
+    print("ГОТОВО! Проверьте папку lab6_output/ с нужными файлами")
     print("=" * 60)
 
 

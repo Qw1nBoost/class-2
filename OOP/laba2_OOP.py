@@ -122,9 +122,8 @@ class Printer:
 
 
 def demonstrate_printer() -> None:
-    """Демонстрация работы класса Printer"""
 
-    print("=== ДЕМОНСТРАЦИЯ РАБОТЫ КЛАССА PRINTER ===\n")
+    print("-- класс Printer --\n")
 
     # Демонстрация 1: Статическое использование со шрифтом высотой 5
     print("1. Статическое использование (шрифт 5x5):")
@@ -134,8 +133,7 @@ def demonstrate_printer() -> None:
     Printer.print("WORLD", Color.GREEN, '@')
 
     time.sleep(2)
-    print("\n" + "=" * 50 + "\n")
-
+    
     # Демонстрация 2: Использование с контекстным менеджером
     print("2. Использование с контекстным менеджером (шрифт 5x5):")
 
@@ -144,31 +142,27 @@ def demonstrate_printer() -> None:
         printer.print_text("MANAGER")
 
     time.sleep(2)
-    print("\n" + "=" * 50 + "\n")
-
-
+    
     print("3. Смена шрифта на 7x7:")
     Printer.load_font('font7x7.json')
 
-    Printer.print("BIG", Color.BRIGHT_YELLOW, '■')
+    Printer.print("BIGGER", Color.BRIGHT_YELLOW, '■')
     print()
     Printer.print("FONT", Color.BRIGHT_CYAN, '●')
 
     time.sleep(2)
-    print("\n" + "=" * 50 + "\n")
-
+    
     # Демонстрация 4: Разные цвета и символы
     print("4. Разные цвета и символы (шрифт 7x7):")
 
     Printer.load_font('font7x7.json')
-    Printer.print("COLOR", Color.BRIGHT_RED, '□')
+    Printer.print("BOMB", Color.BRIGHT_RED, '□')
     print()
-    Printer.print("FIRST", Color.BRIGHT_GREEN, '○')
+    Printer.print("CIRCLE", Color.BRIGHT_GREEN, '○')
     print()
-    Printer.print("DEMO", Color.BRIGHT_BLUE, '@')
+    Printer.print("CARS", Color.BRIGHT_BLUE, '@')
 
     time.sleep(2)
-    print("\n" + "=" * 50 + "\n")
 
     # Демонстрация 5: Смешанное использование
     print("5. Смешанное использование:")
@@ -182,9 +176,8 @@ def demonstrate_printer() -> None:
     with Printer(Color.BRIGHT_YELLOW, '6', 'font7x7.json') as p:
         p.print_text("YELLOW")
 
-    print("\n" + "=" * 50)
+    
     print("Демонстрация завершена!")
-
 
 if __name__ == "__main__":
     demonstrate_printer()
