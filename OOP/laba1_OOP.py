@@ -49,7 +49,7 @@ class Angle:
         return self._radians
 
     def __int__(self):
-        """преобразование в int (в радианах, округление)"""
+        """преобразование в int (в радианах)"""
         return int(round(self._radians))
 
     def __str__(self):
@@ -294,24 +294,19 @@ class AngleRange:
         else:
             return True
 
-
-# Демонстрация работы классов
 print("-- класс Angle --")
 
-# Создание углов
-angle1 = Angle.from_degrees(45)  # 45 градусов
-angle2 = Angle(math.pi / 4)  # π/4 радиан
+angle1 = Angle.from_degrees(45)  
+angle2 = Angle(math.pi / 4)  
 angle3 = Angle.from_degrees(90)
 
 print(f"angle1: {angle1} ({angle1.radians:.4f} рад)")
 print(f"angle2: {angle2} ({angle2.radians:.4f} рад)")
 print(f"angle3: {angle3} ({angle3.radians:.4f} рад)\n")
 
-# Сравнение
 print(f"{angle1} == {angle2}: {angle1 == angle2}")
 print(f"{angle1} < {angle3}: {angle1 < angle3}\n")
 
-# Арифметические операции
 sum_angle = angle1 + angle3
 diff_angle = angle3 - angle1
 scaled_angle = angle1 * 2
@@ -320,14 +315,12 @@ print(f"{angle1} + {angle3} = {sum_angle}")
 print(f"{angle3} - {angle1} = {diff_angle}")
 print(f"{angle1} * 2 = {scaled_angle}\n")
 
-# Преобразования
 print(f"float(angle1): {float(angle1):.4f}")
 print(f"int(angle1): {int(angle1)}")
 print(f"str(angle1): {str(angle1)}\n")
 
 print("-- класс AngleRange --")
 
-# Создание промежутков
 range1 = AngleRange(0, math.pi / 2)  # [0°, 90°]
 range2 = AngleRange.from_degrees(45, 135)
 range3 = AngleRange.from_degrees(270, 90)  # Промежуток через 0
@@ -341,15 +334,15 @@ print(f"Длина range1: {abs(range1)}")
 print(f"Длина range2: {abs(range2)}")
 print(f"Длина range3: {abs(range3)}\n")
 
-# Проверка принадлежности
 test_angle = Angle.from_degrees(60)
 print(f"{test_angle} in {range1}: {test_angle in range1}")
 print(f"{test_angle} in {range3}: {test_angle in range3}")
 print(f"{test_angle} in {range4}: {test_angle in range4}\n")
 
-# Сравнение промежутков
 print(f"{range1} == {range2}: {range1 == range2}\n")
 
-# Операции с промежутками
 print(f"{range5} + {range1} = {range4 + range1}")
 print(f"{range4} - {range5} = {range4 - range5}")
+
+range6 = Angle.from_degrees(450)
+print(range6.radians)
