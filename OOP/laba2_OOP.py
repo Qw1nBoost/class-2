@@ -78,8 +78,7 @@ class Printer:
 
     @classmethod
     def _is_wide_symbol(cls, symbol: str) -> bool:
-        wide_symbols = {'★', '◘', '♦', '♠', '♥', '◆', '♣', '△', '▽'}
-        return symbol in wide_symbols
+        return len(symbol.encode('utf-8')) > 1
 
     @classmethod
     def print(cls, text: str, color: Color = Color.WHITE, symbol: str = '*'): # статический метод
@@ -137,9 +136,9 @@ def demonstrate_printer() -> None:
     print("3. Смена шрифта на 7x7:")
     Printer.load_font('font7x7.json')
 
-    Printer.print("BIGGER", Color.BRIGHT_YELLOW, '■')
+    Printer.print("BIGGER", Color.BRIGHT_YELLOW, '$')
     print()
-    Printer.print("FONT", Color.BRIGHT_CYAN, '●')
+    Printer.print("FONT", Color.BRIGHT_CYAN, '#')
 
     time.sleep(2)
     
@@ -147,9 +146,9 @@ def demonstrate_printer() -> None:
     print("4. Разные цвета и символы (шрифт 7x7):")
 
     Printer.load_font('font7x7.json')
-    Printer.print("BOMB", Color.BRIGHT_RED, '□')
+    Printer.print("BOMB", Color.BRIGHT_RED, '@')
     print()
-    Printer.print("CIRCLE", Color.BRIGHT_GREEN, '○')
+    Printer.print("CIRCLE", Color.BRIGHT_GREEN, '*')
     print()
     Printer.print("CARS", Color.BRIGHT_BLUE, '@')
 
@@ -160,7 +159,7 @@ def demonstrate_printer() -> None:
 
     # статический вызов
     Printer.load_font('font7x7.json')
-    Printer.print("STATIC", Color.BRIGHT_MAGENTA, '▲')
+    Printer.print("STATIC", Color.BRIGHT_MAGENTA, '1')
     print()
 
     # контекстный менеджер
