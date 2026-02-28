@@ -5,7 +5,6 @@ import time
 
 
 class Color(Enum):
-    """Перечисление цветов для текста"""
     BLACK = 30
     RED = 31
     GREEN = 32
@@ -25,7 +24,6 @@ class Color(Enum):
 
 
 class ANSI:
-    """ANSI escape codes только для цветов"""
     RESET = '\033[0m'
 
     @staticmethod
@@ -65,17 +63,14 @@ class Printer:
         if font_file:
             self.load_font(font_file)
 
-    def __enter__(self):
-        """Вход в контекстный manager"""
+    def __enter__(self): # вход в контекстный manager
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Выход из контекстного менеджера"""
         print(ANSI.RESET, end='')
 
     @classmethod
-    def load_font(cls, font_file: str):
-        """Загружает шрифт для класса"""
+    def load_font(cls, font_file: str): # загрузка шрифта для класса
         cls._current_font = FontLoader.load_font(font_file)
         if cls._current_font:
             first_char = next(iter(cls._current_font.values()))
@@ -87,8 +82,7 @@ class Printer:
         return symbol in wide_symbols
 
     @classmethod
-    def print(cls, text: str, color: Color = Color.WHITE, symbol: str = '*'):
-        """Статический метод для вывода текста"""
+    def print(cls, text: str, color: Color = Color.WHITE, symbol: str = '*'): # статический метод
         if cls._is_wide_symbol(symbol):
             print(f"Ошибка: символ '{symbol}' недопустим. Используйте только однобайтовые символы.")
             return
@@ -107,16 +101,13 @@ class Printer:
 
                 for i, line in enumerate(char_pattern):
                     rendered_line = line.replace('*', symbol)
-                    # Дополняем пробелами справа до fixed_width
                     padded_line = rendered_line.center(cls._font_height)
-                    lines[i] += padded_line + ' '  # пробел между символами
+                    lines[i] += padded_line + ' '
 
-        # Выводим все строки
         for line in lines:
             print(ANSI.set_color(color) + line + ANSI.RESET)
 
-    def print_text(self, text: str):
-        """Вывод текста с настройками экземпляра"""
+    def print_text(self, text: str): # вывод с настройками экземпляра
         self.__class__.print(text, self.color, self.symbol)
         print()  # Добавляем пустую строку между текстами
 
@@ -125,7 +116,7 @@ def demonstrate_printer() -> None:
 
     print("-- класс Printer --\n")
 
-    # Демонстрация 1: Статическое использование со шрифтом высотой 5
+    # статическое использование 
     print("1. Статическое использование (шрифт 5x5):")
     Printer.load_font('font5x5.json')
     Printer.print("HELLO", Color.RED, '#')
@@ -134,7 +125,7 @@ def demonstrate_printer() -> None:
 
     time.sleep(2)
     
-    # Демонстрация 2: Использование с контекстным менеджером
+    # контекстный менеджер
     print("2. Использование с контекстным менеджером (шрифт 5x5):")
 
     with Printer(Color.MAGENTA, '$', 'font5x5.json') as printer:
@@ -152,7 +143,7 @@ def demonstrate_printer() -> None:
 
     time.sleep(2)
     
-    # Демонстрация 4: Разные цвета и символы
+    # разные цвета и символы
     print("4. Разные цвета и символы (шрифт 7x7):")
 
     Printer.load_font('font7x7.json')
@@ -164,15 +155,15 @@ def demonstrate_printer() -> None:
 
     time.sleep(2)
 
-    # Демонстрация 5: Смешанное использование
+    # смешанное использование
     print("5. Смешанное использование:")
 
-    # Статический вызов
+    # статический вызов
     Printer.load_font('font7x7.json')
     Printer.print("STATIC", Color.BRIGHT_MAGENTA, '▲')
     print()
 
-    # Контекстный менеджер
+    # контекстный менеджер
     with Printer(Color.BRIGHT_YELLOW, '6', 'font7x7.json') as p:
         p.print_text("YELLOW")
 

@@ -6,7 +6,6 @@ U_SIGN = 'U'
 
 
 class Angle:
-    """Класс для хранения и работы с углами"""
     def __init__(self, radians: float) -> None:
         self._radians = self._normalize(radians)
 
@@ -27,17 +26,14 @@ class Angle:
 
     @property
     def degrees(self):
-        """получаем угол в градусах"""
         return math.degrees(self._radians)
 
     @degrees.setter
     def degrees(self, value):
-        """устанавливаем угол в градусах"""
         self._radians = math.radians(value)
 
     @staticmethod
     def _normalize(radians):
-        """нормализовать угол в диапазон [0, 2π)"""
         two_pi = 2 * math.pi
         normalized = radians % two_pi
         if normalized < 0:
@@ -45,23 +41,18 @@ class Angle:
         return normalized
 
     def __float__(self):
-        """преобразование в float (в радианах)"""
         return self._radians
 
     def __int__(self):
-        """преобразование в int (в радианах)"""
         return int(round(self._radians))
 
     def __str__(self):
-        """строковое представление"""
         return f"{self.degrees:.2f}°"
 
     def __repr__(self):
-        """представление для отладки"""
         return f"Angle(radians={self._radians:.6f})"
 
     def __eq__(self, other):
-        """сравнение на равенство"""
         if isinstance(other, (int, float)):
             other = Angle(other)
         if isinstance(other, Angle):
@@ -69,7 +60,6 @@ class Angle:
         return NotImplemented
 
     def __lt__(self, other):
-        """меньше"""
         if isinstance(other, (int, float)):
             other = Angle(other)
         if isinstance(other, Angle):
@@ -77,7 +67,6 @@ class Angle:
         return NotImplemented
 
     def __le__(self, other):
-        """меньше или равно"""
         if isinstance(other, (int, float)):
             other = Angle(other)
         if isinstance(other, Angle):
@@ -85,15 +74,12 @@ class Angle:
         return NotImplemented
 
     def __gt__(self, other):
-        """больше"""
         return not self <= other
 
     def __ge__(self, other):
-        """больше или равно"""
         return not self < other
 
     def __add__(self, other):
-        """сложение"""
         if isinstance(other, (int, float)):
             return Angle(self._radians + other)
         if isinstance(other, Angle):
@@ -101,11 +87,9 @@ class Angle:
         return NotImplemented
 
     def __radd__(self, other):
-        """правое сложение"""
         return self.__add__(other)
 
     def __sub__(self, other):
-        """вычитание"""
         if isinstance(other, (int, float)):
             return Angle(self._radians - other)
         if isinstance(other, Angle):
@@ -113,23 +97,19 @@ class Angle:
         return NotImplemented
 
     def __rsub__(self, other):
-        """правое вычитание"""
         if isinstance(other, (int, float)):
             return Angle(other - self._radians)
         return NotImplemented
 
     def __mul__(self, scalar):
-        """умножение на скаляр"""
         if isinstance(scalar, (int, float)):
             return Angle(self._radians * scalar)
         return NotImplemented
 
     def __rmul__(self, scalar):
-        """правое умножение на скаляр"""
         return self.__mul__(scalar)
 
     def __truediv__(self, scalar):
-        """деление на скаляр"""
         if isinstance(scalar, (int, float)):
             if scalar == 0:
                 raise ZeroDivisionError("Division by zero")
@@ -137,12 +117,10 @@ class Angle:
         return NotImplemented
 
     def __abs__(self):
-        """абсолютное значение"""
         return Angle(abs(self._radians))
 
 
 class AngleRange:
-    """класс для хранения промежутков углов"""
     def __init__(self, start, end, start_inclusive=True, end_inclusive=True):
 
         self.start = self._to_angle(start)
@@ -159,7 +137,6 @@ class AngleRange:
 
     @staticmethod
     def _to_angle(value):
-        """преобразование в Angle"""
         if isinstance(value, Angle):
             return value
         elif isinstance(value, (int, float)):
@@ -168,7 +145,6 @@ class AngleRange:
             raise TypeError("Value must be Angle, int or float")
 
     def __eq__(self, other):
-        """сравнение на равенство"""
         if not isinstance(other, AngleRange):
             return False
         return (self.start == other.start and
@@ -177,18 +153,15 @@ class AngleRange:
                 self.end_inclusive == other.end_inclusive)
 
     def __str__(self):
-        """строковое представление"""
         start_bracket = '[' if self.start_inclusive else '('
         end_bracket = ']' if self.end_inclusive else ')'
         return f"{start_bracket}{self.start}, {self.end}{end_bracket}"
 
     def __repr__(self):
-        """представление для отладки"""
         return (f"AngleRange(start={self.start!r}, end={self.end!r}, "
                 f"start_inclusive={self.start_inclusive}, end_inclusive={self.end_inclusive})")
 
     def __abs__(self):
-        """длина промежутка"""
         if self.start <= self.end:
             return Angle(self.end.radians - self.start.radians)
         else:
@@ -196,7 +169,6 @@ class AngleRange:
             return Angle(2 * math.pi - self.start.radians + self.end.radians)
 
     def __contains__(self, item):
-        """проверка принадлежности угла или промежутка"""
         if isinstance(item, (Angle, int, float)):
             angle = self._to_angle(item)
             return self._contains_angle(angle)
@@ -206,7 +178,6 @@ class AngleRange:
             return False
 
     def _contains_angle(self, angle):
-        """проверка принадлежности угла"""
         if self.start <= self.end:
             # Обычный промежуток
             left_ok = (angle > self.start) or (angle == self.start and self.start_inclusive)
@@ -219,20 +190,14 @@ class AngleRange:
             return left_ok or right_ok
 
     def _contains_range(self, other):
-        """проверка вхождения промежутка в другой"""
-        # Упрощенная проверка - точное совпадение границ
         return (self.start == other.start and self.end == other.end and
                 (not other.start_inclusive or self.start_inclusive) and
                 (not other.end_inclusive or self.end_inclusive))
 
-    # region magic methods
-
     def __add__(self, other):
-        """объединение промежутков"""
         if not isinstance(other, AngleRange):
             return NotImplemented
 
-        # Проверяем пересечение промежутков
         if self._intersects(other):
             # Если пересекаются - создаем объединенный промежуток
             new_start = min(self.start, other.start)
@@ -243,7 +208,6 @@ class AngleRange:
             return f"{self} {U_SIGN} {other}"
 
     def __sub__(self, other):
-        """разность промежутков"""
         if not isinstance(other, AngleRange):
             return NotImplemented
 
@@ -263,7 +227,6 @@ class AngleRange:
             return ''.join(result)
 
         if self == other:
-            # Полное совпадение - пустое множество
             return EMPTY_PLENTY_SIGN
 
         if self._intersects(other):
@@ -285,11 +248,8 @@ class AngleRange:
         # Нет пересечения - возвращаем исходный промежуток
         return [self]
 
-    def _intersects(self, other):
-        """проверяет, пересекаются ли промежутки"""
-        # Простая проверка пересечения
+    def _intersects(self, other): # пересекаются ли промежутки
         if self.start <= self.end and other.start <= other.end:
-            # Оба обычных диапазона
             return not (self.end < other.start or other.end < self.start)
         else:
             return True
@@ -346,3 +306,8 @@ print(f"{range4} - {range5} = {range4 - range5}")
 
 range6 = Angle.from_degrees(450)
 print(range6.radians)
+
+f1 = AngleRange.from_degrees(45, 120)
+f2 = AngleRange.from_degrees(10, 50)
+print(f"{f1} - {f2} = {f1 - f2}")
+print(repr(angle1))
