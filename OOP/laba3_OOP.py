@@ -21,7 +21,6 @@ class LogFilterProtocol(Protocol):
 
 # 3. Классы фильтров
 class SimpleLogFilter:
-    """Фильтр по вхождению текста"""
 
     def __init__(self, pattern: str):
         self.pattern = pattern.lower()
@@ -31,7 +30,6 @@ class SimpleLogFilter:
 
 
 class ReLogFilter:
-    """Фильтр по регулярному выражению"""
 
     def __init__(self, pattern: str):
         # Обработать исключение
@@ -45,7 +43,6 @@ class ReLogFilter:
 
 
 class LevelFilter:
-    """Фильтр по уровню логирования"""
 
     def __init__(self, min_level: LogLevel):
         self.min_level = min_level
@@ -68,7 +65,6 @@ class LogHandlerProtocol(Protocol):
 # SocketHandler только отправка по сети
 # Каждый класс отвечает за ОДНУ задачу поэтому лучше ничего не менять
 class ConsoleHandler:
-    """Вывод логов в консоль"""
     @staticmethod
     def handle(log_level: LogLevel, text: str) -> None:
         colors = {
@@ -81,7 +77,6 @@ class ConsoleHandler:
 
 
 class FileHandler:
-    """Запись логов в файл"""
 
     def __init__(self, filename: str):
         try:
@@ -116,7 +111,6 @@ class FileHandler:
 
 
 class SocketHandler:
-    """Отправка логов через сокет"""
 
     def __init__(self, host: str, port: int):
         self.host = host
@@ -132,7 +126,6 @@ class SocketHandler:
 
 
 class SyslogHandler:
-    """Запись в системные логи"""
     @staticmethod
     def handle(log_level: LogLevel, text: str) -> None:
         # Принудительный вывод с форматированием и сбросом буфера
@@ -143,7 +136,6 @@ class SyslogHandler:
 
 
 class FtpHandler:
-    """Запись логов на FTP сервер"""
     def __init__(self, host: str, username: str, password: str, remote_path: str):
         self.host = host
         self.username = username
@@ -172,7 +164,6 @@ class LogFormatterProtocol(Protocol):
 
 # 7. Класс форматтера
 class StandardFormatter:
-    """Форматтер с добавлением уровня и времени"""
 
     def __init__(self, time_format: str = '%Y.%m.%d %H:%M:%S'):
         self.time_format = time_format

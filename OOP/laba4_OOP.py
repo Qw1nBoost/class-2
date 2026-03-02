@@ -5,7 +5,6 @@ TEventArgs = TypeVar('TEventArgs')
 
 
 class EventHandler(Protocol[TEventArgs]):
-    """Протокол для обработчиков событий"""
 
     def handle(self, sender: Any, args: TEventArgs) -> None:
         """
@@ -23,7 +22,8 @@ class Event(Generic[TEventArgs]):
         self._observers = []
 
     def __iadd__(self, observer):
-        self._observers.append(observer)
+        if observer not in self._observers:
+            self._observers.append(observer)
         return self
 
     def __isub__(self, observer):
@@ -32,13 +32,15 @@ class Event(Generic[TEventArgs]):
         return self
 
     def invoke(self, sender, args):
-        observers_copy = self._observers[:]
-        for observer in observers_copy:
+        # Для PropertyChangingEventArgs нужно учитывать can_change
+        for observer in self._observers[:]:
             try:
                 observer.handle(sender, args)
+                # Если это событие изменения и какой-то валидатор запретил
+                if isinstance(args, PropertyChangingEventArgs) and not args.can_change:
+                    break  # Прерываем дальнейшую проверку
             except Exception as e:
-                handler_name = getattr(observer, 'name', observer.__class__.__name__)
-                print(f"Ошибка в обработчике '{handler_name}': {e}")
+                print(f"Ошибка в обработчике: {e}")
 
 
 class TestHandler:
@@ -116,7 +118,6 @@ def test_error_handling():
 
 # 3. PropertyChangedEventArgs Хранит информацию об изменении свойства
 class PropertyChangedEventArgs:
-    """Аргументы события после изменения свойства"""
     def __init__(self, property_name: str):
         self.property_name = property_name
 
@@ -126,7 +127,6 @@ class PropertyChangedEventArgs:
 
 # 4. ConsoleLoggerHandler - обработчик для вывода в консоль
 class ConsoleLoggerHandler:
-    """Обработчик для логирования изменений в консоль"""
 
     def __init__(self, name: str = "ConsoleLogger"):
         self.name = name
@@ -138,7 +138,6 @@ class ConsoleLoggerHandler:
 
 # 5. PropertyChangingEventArgs
 class PropertyChangingEventArgs:
-    """Аргументы события до изменения свойства"""
 
     def __init__(self, property_name: str, old_value: Any, new_value: Any):
         self.property_name = property_name
@@ -189,7 +188,6 @@ class PropertyChangingEventArgs:
 
 
 class IntValidatorHandler:
-    """Базовый валидатор для целочисленных свойств"""
 
     def __init__(self, prop_name: str, min_value: int = 0, max_value: int = 100):
         self.name = prop_name
@@ -228,62 +226,45 @@ class IntValidatorHandler:
 
 
 class StringValidatorHandler:
-    """Валидатор для строковых свойств Person и Product"""
 
     def __init__(self, prop_name: str, min_length: int = 1, max_length: int = 32):
-        """
-        Args:
-            prop_name: Имя свойства для валидации
-            min_length: Минимальная длина строки (по умолчанию 1 - не пустая)
-            max_length: Максимальная длина строки (по умолчанию 32)
-        """
         self.name = prop_name
         self.min_length = min_length
         self.max_length = max_length
 
     def handle(self, sender: Any, args: PropertyChangingEventArgs) -> None:
-        """Обработчик валидации строк"""
-        # Проверяем, соответствует ли имя свойства нашему валидатору
         if args.property_name != self.name:
             return
 
-        # Проверяем, является ли значение строкой
         if not isinstance(args.new_value, str):
             print(f"[StringValidator] {args.property_name} должно быть строкой: {args.new_value}")
             args.can_change = False
             return
 
-        # Очищаем строку (удаляем пробелы по краям)
         value = args.new_value.strip()
 
-        # Проверяем минимальную длину (не пустая строка)
         if len(value) < self.min_length:
             print(f"[StringValidator] {args.property_name} не может быть пустым")
             args.can_change = False
             return
 
-        # Проверяем максимальную длину
         if len(value) > self.max_length:
             print(f"[StringValidator] {args.property_name} слишком длинное "
                   f"(максимум {self.max_length} символов): '{value}'")
             args.can_change = False
             return
 
-        # Дополнительные проверки для email
         if args.property_name == "email" and "@" not in value:
             print(f"[StringValidator] Email должен содержать символ '@': '{value}'")
             args.can_change = False
             return
 
-        # Если все проверки пройдены, можно изменить значение
         print(f"[StringValidator] {args.property_name} валидация пройдена: '{value}'")
-        # Обновляем значение в args (очищенная строка)
         args.new_value = value
 
 
 # 7. Классы с автообновляющимися свойствами
 class Person:
-    """Класс Person с отслеживанием изменений свойств"""
 
     def __init__(self, name: str = "", age: int = 0, email: str = ""):
         self._name = name
@@ -352,7 +333,6 @@ class Person:
 
 
 class Product:
-    """Класс Product с отслеживанием изменений свойств"""
 
     def __init__(self, title: str = "", price: float = 0.0, quantity: int = 0):
         self._title = title
@@ -417,18 +397,13 @@ class Product:
     def __str__(self):
         return f"Product(title='{self.title}', price={self.price:.2f}, quantity={self.quantity})"
 
-
-# Демонстрация работы системы
 def demonstrate_complete_system():
     print("=" * 60)
     print("ДЕМОНСТРАЦИЯ ПОЛНОЙ СИСТЕМЫ СОБЫТИЙ И ВАЛИДАЦИИ")
     print("=" * 60)
 
-    # Создаем обработчики
     console_logger = ConsoleLoggerHandler()
-    # validator = ValidatorHandler()
 
-    # СОЗДАЕМ ВАЛИДАТОРЫ С КОНКРЕТНЫМИ ПАРАМЕТРАМИ
     person_age_validator = IntValidatorHandler("age", min_value=0, max_value=150)
     person_name_validator = StringValidatorHandler("name", min_length=1, max_length=32)
     person_email_validator = StringValidatorHandler("email", min_length=1, max_length=32)
@@ -437,18 +412,15 @@ def demonstrate_complete_system():
     product_price_validator = IntValidatorHandler("price", min_value=0, max_value=1000000)
     product_title_validator = StringValidatorHandler("title", min_length=1, max_length=32)
 
-    # Создаем объекты
     person = Person("Иван", 25, "ivan@mail.com")
     product = Product("Ноутбук", 50000.0, 10)
 
-    # Подписываем обработчики на события
     print("\nПОДПИСКА НА СОБЫТИЯ PERSON:")
     person.property_changing += person_age_validator
     person.property_changing += person_name_validator
     person.property_changing += person_email_validator
     person.property_changed += console_logger
 
-    # Подписываем обработчики на события Product
     print("ПОДПИСКА НА СОБЫТИЯ PRODUCT:")
     product.property_changing += product_quantity_validator
     product.property_changing += product_price_validator
@@ -458,7 +430,6 @@ def demonstrate_complete_system():
     print(f"Person: {person}")
     print(f"Product: {product}")
 
-    # Тестируем валидные изменения
     print("\nТЕСТ ВАЛИДНЫХ ИЗМЕНЕНИЙ:")
     person.name = "Петр"
     person.age = 30
@@ -468,7 +439,6 @@ def demonstrate_complete_system():
     product.price = 45000.0
     product.quantity = 15
 
-    # Тестируем невалидные изменения (должны быть отменены)
     print("\nТЕСТ НЕВАЛИДНЫХ ИЗМЕНЕНИЙ:")
     person.age = -5  # Отрицательный возраст
     person.name = ""  # Пустое имя
@@ -477,12 +447,10 @@ def demonstrate_complete_system():
     product.price = -1000  # Отрицательная цена
     product.quantity = -5  # Отрицательное количество
 
-    # Показываем финальное состояние
     print(f"\nФИНАЛЬНОЕ СОСТОЯНИЕ:")
     print(f"Person: {person}")
     print(f"Product: {product}")
 
-    # Тест отписки от событий
     print("\nТЕСТ ОТПИСКИ ОТ СОБЫТИЙ:")
     person.property_changing -= person_age_validator
     person.property_changing -= person_name_validator
@@ -494,11 +462,9 @@ def demonstrate_complete_system():
 
 
 if __name__ == "__main__":
-    # Базовые тесты
+
     test_basic_event_system()
     test_error_handling()
 
-    # Полная демонстрация системы
-    demonstrate_complete_system()
 
-    print("\nВСЕ ТЕСТЫ ПРОЙДЕНЫ! ЛАБОРАТОРНАЯ РАБОТА ЗАВЕРШЕНА!")
+    demonstrate_complete_system()
