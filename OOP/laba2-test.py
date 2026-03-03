@@ -1,13 +1,19 @@
-from typing import Dict, List, Optional, ClassVar
+from typing import ClassVar
+
+# Методы — это функции, которые принадлежат классу и определяют его поведени
+
+# balance - публичная переменная 
+# _balance - защищенная переменная (переменную не следует трогать снаружи, только внутри класса и в его наследниках)
+# __balance - приватная переменная
 
 class BankAccount:
-    # Переменная класса
+    # Переменная класса - переменные, которые являются общими для всех экземпляров (объектов) этого класса
     bank_name: ClassVar[str] = "Национальный Банк"
     interest_rate: ClassVar[float] = 0.03  # 3% годовых
     total_accounts: ClassVar[int] = 0
 
     def __init__(self, owner: str, balance: int = 0):
-        # Переменные экземпляра
+        # Переменные экземпляра -  принадлежат конкретному объекту. Каждый объект имеет свою собственную копию этих переменных.
         self.owner = owner
         self.balance = balance
         self.account_number = BankAccount.total_accounts + 1
@@ -30,7 +36,7 @@ class BankAccount:
         else:
             print("Недостаточно средств или неверная сумма")
 
-    # Статический метод (вспомогательный)
+    # Статический метод - функции внутри класса, которые логически связаны с ним, но не зависят ни от экземпляра, ни от класса.
     @staticmethod
     def _validate_amount(amount: int):
         return amount > 0
@@ -75,3 +81,25 @@ print('=' * 20)
 print(f"Банк: {BankAccount.bank_name}")  # Национальный Банк
 print(f"Всего счетов: {acc1.total_accounts}")  # 2
 print(f"Баланс Мэри: {acc2.balance} руб.")  # 9000 руб.
+print('=' * 20)
+
+
+class Person:
+    def __init__(self, name: str, age: int):
+        self.name = name
+        self.__age = age # приватная переменная
+    
+    @property
+    def age(self): # получение значения
+        return self.__age
+    
+    @age.setter # установка значения
+    def age(self, new_age: int):
+        self.__age = new_age
+
+person1 = Person('Андрей', 20)
+print(person1.age) # через property
+person1.age = 35 # через setter
+print(person1.age)
+
+print(person1._Person__age) # получение приватной переменной через экземпляр с помощью name mangling (искажение имени)

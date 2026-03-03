@@ -83,7 +83,12 @@ class Printer:
     def load_font(cls, font_file: str): # загрузка шрифта для класса
         cls._current_font = FontLoader.load_font(font_file)
         if cls._current_font:
-            first_char = next(iter(cls._current_font.values())) #!!!!!!!!
+            first_char = next(iter(cls._current_font.values()))
+            # iter() создает итератор по спискам из значений словаря
+            # next() возвращает след-й элемент итератора
+            #
+            #
+            #
             cls._font_height = len(first_char)
 
     @classmethod
@@ -131,8 +136,6 @@ def demonstrate_printer() -> None:
     with Printer(Color.MAGENTA, '$', 'font5x5.json') as printer:
         printer.print_text("CONTEXT")
         printer.print_text("MANAGER")
-        #print('------------------------------------------------------------------')
-        #print(printer._current_font)
 
     time.sleep(2)
     
