@@ -60,7 +60,7 @@ class VirtualKeyboard:
         self.history.append(command)
         return f"redo: {result}"
         
-    def save_state(self, filename: str = "Labs/Lab6/data/keyboard_state.json") -> None:
+    def save_state(self, filename: str = "data/keyboard_state.json") -> None:
         memento = KeyboardMemento.from_keyboard(self)
         try:
             with open(filename, "w") as f:
@@ -69,7 +69,7 @@ class VirtualKeyboard:
             print(f"Error saving state: {e}")
             raise e
 
-    def load_state(self, filename: str = "Labs/Lab6/data/keyboard_state.json") -> bool:
+    def load_state(self, filename: str = "data/keyboard_state.json") -> bool:
         try:
             with open(filename, "r") as f:
                 state = json.load(f)

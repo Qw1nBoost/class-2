@@ -12,7 +12,7 @@ if __name__ == "__main__":
         print(COLORING.format(33, "Keyboard state loaded"))
         print(COLORING.format(33, PrintCharCommand.text))
     
-    with open("Lab6/data/keyboard_log.txt", "w") as log_file:
+    with open("data/keyboard_log.txt", "w") as log_file:
         def print_and_log(message) -> None:
             print(COLORING.format(32, message))
             log_file.write(message + "\n")

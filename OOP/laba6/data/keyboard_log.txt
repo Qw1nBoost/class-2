@@ -1,0 +1,13 @@
+abababa
+abababab
+ababababc
+undo: abababab
+undo: abababa
+redo: abababab
+volume increased +20% (now: 130%)
+volume decreased -20% (now: -30%)
+media player launched
+ababababd
+undo: abababab
+undo: media player closed
+Keyboard state saved
