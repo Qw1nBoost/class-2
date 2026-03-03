@@ -247,23 +247,23 @@ class AuthServiceProtocol(Protocol):
     @abstractmethod
     def is_authorized(self) -> bool:
         """Проверка авторизации текущего пользователя"""
-        ...
+        pass
 
     @property
     @abstractmethod
     def current_user(self) -> Optional[User]:
         """Текущий авторизованный пользователь"""
-        ...
+        pass
 
     @abstractmethod
     def sign_in(self, login: str, password: str) -> bool:
         """Вход пользователя в систему"""
-        ...
+        pass
 
     @abstractmethod
     def sign_out(self) -> None:
         """Выход пользователя из системы"""
-        ...
+        pass
 
 
 # 6. Реализация сервиса авторизации

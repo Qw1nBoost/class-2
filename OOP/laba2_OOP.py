@@ -1,8 +1,16 @@
 import json
+import types
 from enum import Enum
 from typing import Dict, List, Optional, ClassVar
+from types import TracebackType
 import time
 
+# classvar и optional
+# * 5
+# padded_line
+# аннотация в _current_font
+
+#методы, переменные класса, примеры и поведение, публичные защищенные и приватные переменные, инкапсуляция в питоне(name менгеринг)
 
 class Color(Enum):
     BLACK = 30
@@ -53,46 +61,39 @@ class FontLoader:
 
 
 class Printer:
-    _current_font: ClassVar[Optional[Dict[str, List[str]]]] = None
-    _font_height: ClassVar[int] = 0
+    _current_font: ClassVar[Optional[Dict[str, List[str]]]] = None #атрибут принадлежит классу и доступен во всех экземплярах. изменение только через класс
+    _font_height: ClassVar[int] = 0 # optional. переменная либо типа A, либо None
 
-    def __init__(self, color: Color = Color.WHITE, symbol: str = '*', font_file: str = None):
+    def __init__(self, color: Color = Color.WHITE, symbol: str = '*', font_file: Optional[str] = None):
         self.color = color
         self.symbol = symbol
 
         if font_file:
             self.load_font(font_file)
 
-    def __enter__(self): # вход в контекстный manager
+    def __enter__(self):
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Optional[type[BaseException]] = None, # тип возникшего исключения
+                exc_val: Optional[BaseException] = None, # объект исключения
+                exc_tb: Optional[TracebackType] = None): # объект traceback с информацией о стеке вызовов
         print(ANSI.RESET, end='')
 
     @classmethod
     def load_font(cls, font_file: str): # загрузка шрифта для класса
         cls._current_font = FontLoader.load_font(font_file)
         if cls._current_font:
-            first_char = next(iter(cls._current_font.values()))
+            first_char = next(iter(cls._current_font.values())) #!!!!!!!!
             cls._font_height = len(first_char)
 
     @classmethod
-    def _is_wide_symbol(cls, symbol: str) -> bool:
-        return len(symbol.encode('utf-8')) > 1
-
-    @classmethod
     def print(cls, text: str, color: Color = Color.WHITE, symbol: str = '*'): # статический метод
-        if cls._is_wide_symbol(symbol):
-            print(f"Ошибка: символ '{symbol}' недопустим. Используйте только однобайтовые символы.")
-            return
-
         lines = [''] * cls._font_height
 
         for char in text.upper():
             if char == ' ':
-                # Добавляем пробелы во все строки
                 for i in range(cls._font_height):
-                    lines[i] += ' ' * 5
+                    lines[i] += ' ' * cls._font_height #$$$$
                 continue
 
             if char in cls._current_font:
@@ -108,7 +109,7 @@ class Printer:
 
     def print_text(self, text: str): # вывод с настройками экземпляра
         self.__class__.print(text, self.color, self.symbol)
-        print()  # Добавляем пустую строку между текстами
+        print()
 
 
 def demonstrate_printer() -> None:
@@ -130,6 +131,8 @@ def demonstrate_printer() -> None:
     with Printer(Color.MAGENTA, '$', 'font5x5.json') as printer:
         printer.print_text("CONTEXT")
         printer.print_text("MANAGER")
+        #print('------------------------------------------------------------------')
+        #print(printer._current_font)
 
     time.sleep(2)
     
@@ -153,21 +156,6 @@ def demonstrate_printer() -> None:
     Printer.print("CARS", Color.BRIGHT_BLUE, '@')
 
     time.sleep(2)
-
-    # смешанное использование
-    print("5. Смешанное использование:")
-
-    # статический вызов
-    Printer.load_font('font7x7.json')
-    Printer.print("STATIC", Color.BRIGHT_MAGENTA, '1')
-    print()
-
-    # контекстный менеджер
-    with Printer(Color.BRIGHT_YELLOW, '6', 'font7x7.json') as p:
-        p.print_text("YELLOW")
-
-    
-    print("Демонстрация завершена!")
 
 if __name__ == "__main__":
     demonstrate_printer()
