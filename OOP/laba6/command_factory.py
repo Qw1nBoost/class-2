@@ -21,11 +21,9 @@ class CommandFactory: #Фабрика для создания команд"
         }
     
     @staticmethod
-    def get_text():
-        """Получить текущий текст"""
+    def get_text(): #Получить текущий текст
         return PrintCharCommand.text
     
     @staticmethod
-    def set_text(text):
-        """Установить текст"""
+    def set_text(text): #Установить текст
         PrintCharCommand.text = text
