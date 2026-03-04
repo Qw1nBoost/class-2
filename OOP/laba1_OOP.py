@@ -343,6 +343,5 @@ range6 = Angle.from_degrees(450)
 print(range6.radians)
 
 f1 = AngleRange.from_degrees(45, 120, start_inclusive=False, end_inclusive=False)
-print(f1)
 
 print(Angle.from_degrees(45) + f1 + Angle.from_degrees(120))
