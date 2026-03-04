@@ -80,10 +80,39 @@ class Angle:
         return not self < other
 
     def __add__(self, other):
+    #     if isinstance(other, (int, float)):
+    #         return Angle(self._radians + other)
+    #     if isinstance(other, Angle):
+    #         return Angle(self._radians + other._radians)
+        
+    #     # Angle + AngleRange
+    #     if isinstance(other, AngleRange):
+    #         if self.degrees == other.start:
+    #             return AngleRange(self.degrees, other.end)
+    #         else:
+    #             pass
+    #     return NotImplemented
+                # Angle + число
         if isinstance(other, (int, float)):
-            return Angle(self._radians + other)
+            return Angle(self.degrees + other)
+        
+        # Angle + Angle
         if isinstance(other, Angle):
-            return Angle(self._radians + other._radians)
+            return Angle(self.degrees + other.degrees)
+        
+        # Angle + AngleRange
+        if isinstance(other, AngleRange):
+            if self.degrees == other.start:
+                return AngleRange(self.degrees, other.end, start_inclusive=True, end_inclusive=other.end_inclusive)
+            else:
+                print(self.degrees, other.start)
+                # Создаем новый диапазон, включающий текущий угол
+                return AngleRange(
+                    min(self.degrees, other.start),
+                    max(self.degrees, other.end)
+                )
+            
+        
         return NotImplemented
 
     def __radd__(self, other):
@@ -307,7 +336,7 @@ print(f"{range4} - {range5} = {range4 - range5}")
 range6 = Angle.from_degrees(450)
 print(range6.radians)
 
-f1 = AngleRange.from_degrees(45, 120)
-f2 = AngleRange.from_degrees(10, 50)
-print(f"{f1} - {f2} = {f1 - f2}")
-print(repr(angle1))
+f1 = AngleRange.from_degrees(45, 120, start_inclusive=False, end_inclusive=False)
+print(f1)
+
+print(Angle(45) + f1)
