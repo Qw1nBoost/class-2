@@ -1,5 +1,5 @@
 from typing import Self
-from commands import PrintCharCommand
+from command_factory import CommandFactory  # Импортируем фабрику вместо конкретной команды
 
 class KeyboardMemento:
     def __init__(self, state: dict) -> None:
@@ -7,7 +7,8 @@ class KeyboardMemento:
         
     @classmethod
     def from_keyboard(cls, keyboard) -> Self:
-        text = PrintCharCommand.text
+        # Используем фабрику для получения текста
+        text = keyboard.command_factory.get_text()
 
         key_bindings = {}
         for key, command in keyboard.key_bindings.items():

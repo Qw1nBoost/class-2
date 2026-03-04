@@ -1,18 +1,20 @@
 from v_keyboard import VirtualKeyboard
-from commands import PrintCharCommand
+from command_factory import CommandFactory  # Импортируем фабрику
 
 COLORING = "\033[{}m{}\033[0m"
 
 if __name__ == "__main__":
-    keyboard = VirtualKeyboard()
+    command_factory = CommandFactory()
+    keyboard = VirtualKeyboard(command_factory)
     
     if not keyboard.load_state():
         print(COLORING.format(33, "No saved state found, using defaults"))
     else:
         print(COLORING.format(33, "Keyboard state loaded"))
-        print(COLORING.format(33, PrintCharCommand.text))
+        # Используем фабрику для получения текста
+        print(COLORING.format(33, command_factory.get_text()))
     
-    with open("data/keyboard_log.txt", "w") as log_file:
+    with open("laba6/data/keyboard_log.txt", "w") as log_file:
         def print_and_log(message) -> None:
             print(COLORING.format(32, message))
             log_file.write(message + "\n")

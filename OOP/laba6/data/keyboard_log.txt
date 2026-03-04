@@ -1,13 +1,13 @@
-abababa
-abababab
-ababababc
-undo: abababab
-undo: abababa
-redo: abababab
-volume increased +20% (now: 130%)
-volume decreased -20% (now: -30%)
+abababababa
+abababababab
+ababababababc
+undo: abababababab
+undo: abababababa
+redo: abababababab
+volume increased +20% (now: 170%)
+volume decreased -20% (now: -70%)
 media player launched
-ababababd
-undo: abababab
+ababababababd
+undo: abababababab
 undo: media player closed
 Keyboard state saved

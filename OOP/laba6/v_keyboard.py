@@ -1,26 +1,18 @@
 from typing import Optional
 import json
-from commands import *
+from commands import Command
 from memento import KeyboardMemento
+from command_factory import CommandFactory
+
 
 class VirtualKeyboard:
-    def __init__(self) -> None:
+    def __init__(self, command_factory=None) -> None:
         self.key_bindings: dict[str, Command] = {}
         self.history: list[dict[str, Command]] = []
         self.undo_stack: list[dict[str, Command]] = []
-
-        self.init_default_bindings()
+        self.command_factory = command_factory or CommandFactory()  # Сохраняем фабрику
         
-    def init_default_bindings(self) -> None:
-        self.bind_key("a", PrintCharCommand("a"))
-        self.bind_key("b", PrintCharCommand("b"))
-        self.bind_key("c", PrintCharCommand("c"))
-        self.bind_key("d", PrintCharCommand("d"))
-        self.bind_key("ctrl++", VolumeUpCommand())
-        self.bind_key("ctrl+-", VolumeDownCommand())
-        self.bind_key("ctrl+p", MediaPlayerCommand())
-        self.bind_key("undo", None)  
-        self.bind_key("redo", None)  
+        create_default_bindings(self) 
         
     def bind_key(self, key: str, command: Optional[Command]) -> None:
         self.key_bindings[key] = command
@@ -33,7 +25,9 @@ class VirtualKeyboard:
             
         command = self.key_bindings.get(key)
         if not command and len(key) == 1:
-            self.bind_key(key, PrintCharCommand(key))
+            # Используем фабрику вместо прямого создания
+            new_command = self.command_factory.create_print_command(key)
+            self.bind_key(key, new_command)
             command = self.key_bindings.get(key)
         if command:
             result = command.execute()
@@ -60,7 +54,7 @@ class VirtualKeyboard:
         self.history.append(command)
         return f"redo: {result}"
         
-    def save_state(self, filename: str = "data/keyboard_state.json") -> None:
+    def save_state(self, filename: str = "laba6/data/keyboard_state.json") -> None:
         memento = KeyboardMemento.from_keyboard(self)
         try:
             with open(filename, "w") as f:
@@ -69,21 +63,30 @@ class VirtualKeyboard:
             print(f"Error saving state: {e}")
             raise e
 
-    def load_state(self, filename: str = "data/keyboard_state.json") -> bool:
+    def load_state(self, filename: str = "laba6/data/keyboard_state.json") -> bool:
         try:
             with open(filename, "r") as f:
                 state = json.load(f)
             
-            PrintCharCommand.text = state['text']
-            class_names = {cls.__name__: cls for cls in Command.__subclasses__()}
+            # Используем фабрику вместо прямого доступа
+            self.command_factory.set_text(state['text'])
+            
+            # Получаем классы команд через фабрику
+            class_names = {}
+            for key, factory in self.command_factory.get_default_bindings().items():
+                cmd = factory()
+                if cmd:
+                    class_names[cmd.__class__.__name__] = cmd.__class__
                 
             self.key_bindings.clear()
             for key, command_data in state.get('key_bindings', {}).items():
                 if command_data is None:
                     self.key_bindings[key] = None
                 else:
-                    command = class_names[command_data['class']](**command_data['state'])
-                    self.key_bindings[key] = command
+                    command_class = class_names.get(command_data['class'])
+                    if command_class:
+                        command = command_class(**command_data['state'])
+                        self.key_bindings[key] = command
 
             self.history = [
                 {"key": key, "command": self.key_bindings[key]} 
@@ -102,4 +105,8 @@ class VirtualKeyboard:
             return False
 
 
-
+def create_default_bindings(keyboard: VirtualKeyboard) -> None:
+    """Функция для создания стандартных привязок клавиш"""
+    default_bindings = keyboard.command_factory.get_default_bindings()
+    for key, command_factory in default_bindings.items():
+        keyboard.bind_key(key, command_factory())

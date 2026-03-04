@@ -1,5 +1,5 @@
 {
-    "text": "abababab",
+    "text": "abababababab",
     "key_bindings": {
         "a": {
             "class": "PrintCharCommand",
@@ -29,14 +29,14 @@
             "class": "VolumeUpCommand",
             "state": {
                 "amount": 20,
-                "current_volume": 130
+                "current_volume": 170
             }
         },
         "ctrl+-": {
             "class": "VolumeDownCommand",
             "state": {
                 "amount": 20,
-                "current_volume": -30
+                "current_volume": -70
             }
         },
         "ctrl+p": {
@@ -49,6 +49,14 @@
         "redo": null
     },
     "history": [
+        "a",
+        "b",
+        "ctrl++",
+        "ctrl+-",
+        "a",
+        "b",
+        "ctrl++",
+        "ctrl+-",
         "a",
         "b",
         "ctrl++",
