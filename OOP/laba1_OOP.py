@@ -102,15 +102,16 @@ class Angle:
         
         # Angle + AngleRange
         if isinstance(other, AngleRange):
-            if self.degrees == other.start:
-                return AngleRange(self.degrees, other.end, start_inclusive=True, end_inclusive=other.end_inclusive)
-            else:
-                print(self.degrees, other.start)
+            #print(self.degrees, other.start.degrees)
+            if self.degrees == other.start.degrees:
+                return AngleRange(self.from_degrees(self.degrees), other.end, start_inclusive=True, end_inclusive=other.end_inclusive)
+            #else:
+                
                 # Создаем новый диапазон, включающий текущий угол
-                return AngleRange(
-                    min(self.degrees, other.start),
-                    max(self.degrees, other.end)
-                )
+                # return AngleRange(
+                #     min(self.degrees, other.start),
+                #     max(self.degrees, other.end)
+                # )
             
         
         return NotImplemented
@@ -224,8 +225,11 @@ class AngleRange:
                 (not other.end_inclusive or self.end_inclusive))
 
     def __add__(self, other):
-        if not isinstance(other, AngleRange):
-            return NotImplemented
+        # AngleRange + Angle
+        if isinstance(other, Angle) and abs(self.start.degrees - other.degrees):
+            print(self.start.degrees, other.degrees) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            return AngleRange(self.start, other.from_degrees(other.degrees), start_inclusive=self.start_inclusive, end_inclusive=True)
+                
 
         if self._intersects(other):
             # Если пересекаются - создаем объединенный промежуток
@@ -278,6 +282,8 @@ class AngleRange:
         return [self]
 
     def _intersects(self, other): # пересекаются ли промежутки
+        if isinstance(other, Angle):
+            return
         if self.start <= self.end and other.start <= other.end:
             return not (self.end < other.start or other.end < self.start)
         else:
@@ -339,4 +345,4 @@ print(range6.radians)
 f1 = AngleRange.from_degrees(45, 120, start_inclusive=False, end_inclusive=False)
 print(f1)
 
-print(Angle(45) + f1)
+print(Angle.from_degrees(45) + f1 + Angle.from_degrees(120))
