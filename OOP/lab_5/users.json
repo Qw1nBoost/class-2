@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "Мария Сидорова",
+    "login": "maria",
+    "password": "65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5",
+    "email": "maria@mail.com",
+    "address": null
+  },
+  {
+    "id": 2,
+    "name": "Иван Петров",
+    "login": "ivan",
+    "password": "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5",
+    "email": "ivan.new@company.ru",
+    "address": "Санкт-Петербург, Невский пр., 10"
+  },
+  {
+    "id": 3,
+    "name": "Алексей Иванов",
+    "login": "alex",
+    "password": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
+    "email": null,
+    "address": null
+  }
+]
