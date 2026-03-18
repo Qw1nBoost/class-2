@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-
 from log_level import LogLevel
+
+# Определяет "договоренности" - что должны уметь делать компоненты
 
 
 # Интерфейс фильтра: решает, должно ли сообщение пройти дальше

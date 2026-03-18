@@ -3,6 +3,7 @@ DATE_FORMAT: str = "%Y.%m.%d"
 LOG_MESSAGE_TEMPLATE: str = "[{level}] [{timestamp}] {text}"
 ENCODING: str = "utf-8"
 
+# Таймауты для сетевых операций 
 SOCKET_TIMEOUT: int = 3
 FTP_TIMEOUT: int = 5
 FTP_DEFAULT_PORT: int = 21

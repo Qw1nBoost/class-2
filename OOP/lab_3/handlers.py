@@ -5,7 +5,8 @@ import platform
 import socket
 import sys
 from datetime import datetime
-
+from interfaces import ILogHandler
+from log_level import LogLevel
 if platform.system() != "Windows":
     import syslog
 
@@ -21,8 +22,6 @@ from constants import (
     FTP_TIMEOUT,
     SOCKET_TIMEOUT,
 )
-from interfaces import ILogHandler
-from log_level import LogLevel
 
 
 # Выводит сообщение в консоль с цветовой подсветкой по уровню
@@ -106,8 +105,6 @@ class SyslogHandler(ILogHandler):
     # Пишет в syslog на Unix или в stderr на Windows
     def handle(self, log_level: LogLevel, text: str) -> None:
         if platform.system() == "Windows":
-            # print(text, file=sys.stderr)
-            # sys.stderr.flush()
             return
 
         priority_map: dict[LogLevel, int] = {

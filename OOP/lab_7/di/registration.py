@@ -2,6 +2,7 @@ from typing import Any, Callable, Dict, Optional, Type
 from .lifestyle import LifeStyle
 
 # Класс регистрации зависимости
+# Хранит всю информацию о том, как создавать объект определенного интерфейса
 class Registration:
 
     # Сохраняет метаданные регистрации

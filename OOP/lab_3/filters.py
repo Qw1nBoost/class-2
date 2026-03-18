@@ -1,5 +1,4 @@
 import re
-
 from interfaces import ILogFilter
 from log_level import LogLevel
 
@@ -19,7 +18,7 @@ class SimpleLogFilter(ILogFilter):
         return f"SimpleLogFilter(pattern={self.__pattern!r})"
 
 
-# Пропускает сообщения, соответствующие регулярному выражению
+# Пропускает сообщения, соответствующие регулярному выражению (r'\d+' найдет любое сообщение с цифрами)
 class ReLogFilter(ILogFilter):
 
     # Компилирует регулярное выражение; выбрасывает ValueError при некорректном паттерне
@@ -37,7 +36,7 @@ class ReLogFilter(ILogFilter):
         return f"ReLogFilter(pattern={self.__regex.pattern!r})"
 
 
-# Пропускает сообщения с уровнем не ниже указанного минимума
+# Пропускает сообщения с уровнем НЕ ниже указанного минимума
 class LevelFilter(ILogFilter):
 
     # Сохраняет минимальный допустимый уровень логирования
